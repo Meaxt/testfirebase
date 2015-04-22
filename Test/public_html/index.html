@@ -12,7 +12,7 @@ and open the template in the editor.
         <script src="radiant-heat-57.firebaseapp.com"></script>
         <script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
         <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
-        <script src="testjs.js"></script>
+        <!--<script src="testjs.js"></script>-->
     </head>
     <body>
         
@@ -30,6 +30,7 @@ and open the template in the editor.
           var text = $('#messageInput').val();
           ref.push('User ' + name + ' says ' + text);
           $('#messageInput').val('');
+          $('#chatruta').append('User ' + name + ' says ' + text + '<br>');
         }
       });    
             
