@@ -9,35 +9,71 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width">
-                <script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
+        <script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
         <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
     </head>
     <body>
         <div>
-            <input type='text' id='userInput' placeholder='Username'>
-            <input type='password' id='passwordInput' placeholder='Password'>
+            <input type='text' id='messageInput' placeholder='Message'>
+            <input type='text' id='nameInput' placeholder='Name'>
         </div>
+                <div id="chatruta"></div>
         <script>
-            
+
             var ref = new Firebase('https://radiant-heat-57.firebaseio.com/');
-//            function authDataCallback(authData){
-//                if(authData){
-//                    console.log("User " + authData.uid + " is logged in with " + authData.provider);
-//                }else{
-//                    console.log("user is logged out")
-//                }
-//            }
-//            ref.onAuth(auntDataCallback);
-//            
-//            var ref = new Firebase("https://<your-firebase>.firebaseio.com");
-console.log("start");
+            console.log("start");
+            
+                    $('#messageInput').keypress(function (e) {
+        if (e.keyCode == 13) {
+//            var info = snapshot.val();
+          var name = $('#nameInput').val();
+          var text = $('#messageInput').val();
+          ref.push('User ' + name + ' says ' + text);
+          $('#messageInput').val('');
+          $('#chatruta').append('User ' + name + ' says ' + text + '<br>');
+        }
+      });  
+
+            
+            
+            
+            
+            
+            
+
             ref.authWithOAuthPopup("facebook", function(error, authData) {
                 if (error) {
                     console.log("Login Failed!", error);
                 } else {
                     console.log("Authenticated successfully with payload:", authData);
+
                 }
             });
+
+            function authDataCallback(authData) {
+                if (authData) {
+                    console.log("User " + authData.facebook.displayName + " is logged in with " + authData.provider);
+                } else {
+                    console.log("User is logged out");
+                }
+            }
+
+//            ref.onAuth(authDataCallback);
+
+//            ref.onAuth(function(authData) {
+//                if (authData) {
+////                    console.log("new user");
+//                    ref.child("users").child(authData.uid).set({
+//                        provider: authData.provider,
+//                        name: authData.facebook.displayName
+//                    });
+//                }
+//            });
+//
+//            console.log("slut");
+////            console.log(authData);
+
+
         </script>
     </body>
 </html>
