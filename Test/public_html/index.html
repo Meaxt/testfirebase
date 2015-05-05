@@ -15,24 +15,37 @@ and open the template in the editor.
         <!--<script src="testjs.js"></script>-->
     </head>
     <body>
-        
+        <div id="Info"></div>
         <div id="skriv">
             
-            <input type='text' id='nameInput' placeholder='Name'>
-            <input type='text' id='messageInput' placeholder='Message'>
+            <button id='login'>Logga in</button>
         </div>
-        <div id="chatruta"></div>
         <script>
             var ref = new Firebase('https://radiant-heat-57.firebaseio.com/');
-        $('#messageInput').keypress(function (e) {
-        if (e.keyCode == 13) {
-          var name = $('#nameInput').val();
-          var text = $('#messageInput').val();
-          ref.push('User ' + name + ' says ' + text);
-          $('#messageInput').val('');
-          $('#chatruta').append('User ' + name + ' says ' + text + '<br>');
-        }
-      });    
+            $('#login').click(function(){
+                           ref.authWithOAuthPopup("facebook", function(error, authData) {
+                if (error) {
+                    console.log("Login Failed!", error);
+                } else {
+                    
+                    console.log("Authenticated successfully with payload:", authData);
+                    username = authData.facebook.displayName;
+                    window.location = "http://localhost/testfirebase/Test/public_html/test.html";
+//                    $('#info').append('You logged in as '+ username);
+
+                }
+            });
+                        ref.onAuth(function(authData) {
+                if (authData) {
+//                    console.log("new user");
+                    ref.child("users").child(authData.uid).set({
+                        provider: authData.provider,
+                        name: authData.facebook.displayName
+                    });
+                }
+            });
+            });
+            
             
             
         </script>
