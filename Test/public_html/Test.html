@@ -15,129 +15,74 @@ and open the template in the editor.
     </head>
     <body>
         <div id="info"></div>
-        <div>
-            
-            <input type='text' id='messageInput' placeholder='Message'>
-            <!--<input type='text' id='nameInput' placeholder='Name'>-->
-            <button id="logout">Logga ut</button>
+        <div id="input">
+            <button id='login'>Logga in</button> 
         </div>
         <div id="chatruta"></div>
-        
-                    <div id="skriv">
-            
-            <button id='login'>Logga in</button>
-        </div>
+
         <script>
             itsOn = 0;
             var ref = new Firebase('https://radiant-heat-57.firebaseio.com/');
-            $('#login').click(function(){
-                           ref.authWithOAuthPopup("facebook", function(error, authData) {
-                if (error) {
-                    console.log("Login Failed!", error);
-                } else {
-                    itsOn = 1;
-                    console.log("Authenticated successfully with payload:", authData);
-                    username = authData.facebook.displayName;
-//                    window.location = "http://localhost/testfirebase/Test/public_html/test.html";
-//                    $('#info').append('You logged in as '+ username);
-
-                }
+            $('#login').click(function() {
+                ref.authWithOAuthPopup("facebook", function(error, authData) {
+                    if (error) {
+                        console.log("Login Failed!", error);
+                    } else {
+                        itsOn = 1;
+                        console.log("Authenticated successfully with payload:", authData);
+                        username = authData.facebook.displayName;
+                        removeStuff();
+                        addStuff();
+                    }
+                });
+                ref.onAuth(function(authData) {
+                    if (authData) {
+                        ref.child("users").child(authData.uid).set({
+                            provider: authData.provider,
+                            name: authData.facebook.displayName
+                        });
+                    }
+                });
             });
-                        ref.onAuth(function(authData) {
-                if (authData) {
-//                    console.log("new user");
-                    ref.child("users").child(authData.uid).set({
-                        provider: authData.provider,
-                        name: authData.facebook.displayName
-                    });
-                }
-            });
-            });
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-
-if(itsOn = 1){
-            console.log("start");
-            var username;
-            $('#messageInput').keypress(function(e) {
-                if (e.keyCode == 13) {
-//            var info = snapshot.val();
-                    
-                    var text = $('#messageInput').val();
-                    ref.child("chat").push('User ' + username + ' says ' + text);
-                    $('#messageInput').val('');
-                    $('#chatruta').append('User ' + username + ' says ' + text + '<br>');
-                }
-            });
-            
-            $('#logout').click(function(){
-                ref.unauth();
-                console.log("Ut Loggad")
-                itsOn= 0 ;
-//                window.location = "http://localhost/testfirebase/Test/public_html/index.html";
-                
-                
-                
-            });
-            console.log(authData);
+            function addLogin() {
+                $('#logindiv').append('<button id="login">Logga in</button>');
             }
+            function addStuff() {
+                $('#input').append('<input type="text" id="messageInput" placeholder="Message">');
+                $('#input').append('<button id="logout">Logga ut</button>');
+                addListeners();
+            }
+            function removeStuff() {
+                $('#input').children().remove();
+                $('#chatruta').children().empty();
+            }
+            function addListeners() {
+                $('#logout').off("click");
+                $('#logout').click(function() {
+                    ref.unauth();
+                    removeStuff();
+                    addLogin();
+                    itsOn = 0;
+                });
 
-
-
-
-
-//
-//            ref.authWithOAuthRedirect("facebook", function(error) {
-//  if (error) {
-//    console.log("Login Failed!", error);
-//  } else {
-//    
-//  }
-//});
-
-//            ref.authWithOAuthPopup("facebook", function(error, authData) {
-//                if (error) {
-//                    console.log("Login Failed!", error);
-//                } else {
-//                    
-//                    console.log("Authenticated successfully with payload:", authData);
-//                    username = authData.facebook.displayName;
-//                    $('#info').append('You logged in as '+ username);
-//
-//                }
-//            });
-
+                $('#messageInput').keypress(function(e) {
+                    if (e.keyCode == 13) {
+                        var text = $('#messageInput').val();
+                        ref.child("chat").push('User ' + username + ' says ' + text);
+                        $('#messageInput').val('');
+                        $('#chatruta').append('User ' + username + ' says ' + text + '<br>');
+                    }
+                });
+            }
             function authDataCallback(authData) {
                 if (authData) {
-                    console.log("User " + authData.facebook.displayName + " is logged in with " + authData.provider);
+//                    console.log("User " + authData.facebook.displayName + " is logged in with " + authData.provider);
                 } else {
-                    console.log("User is logged out");
+//                    console.log("User is logged out");
                 }
             }
 
             ref.onAuth(authDataCallback);
-
-//            ref.onAuth(function(authData) {
-//                if (authData) {
-////                    console.log("new user");
-//                    ref.child("users").child(authData.uid).set({
-//                        provider: authData.provider,
-//                        name: authData.facebook.displayName
-//                    });
-//                }
-//            });
-
-//            console.log("slut");
-////            console.log(authData);
-
 
         </script>
     </body>
