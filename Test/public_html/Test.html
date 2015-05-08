@@ -11,52 +11,51 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width">
         <script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
         <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
-        <link href="index.html">
+        <link rel="stylesheet" href="index.css">
+
     </head>
     <body>
-        <div id="info"></div>
-        <div id="input">
+
+        <div id="info">
             <button id='login'>Logga in</button> 
         </div>
         <div id="chatruta"></div>
+        <div id="input">
+            
+        </div>
+
 
         <script>
             itsOn = 0;
             var ref = new Firebase('https://radiant-heat-57.firebaseio.com/');
-            $('#login').click(function() {
-                ref.authWithOAuthPopup("facebook", function(error, authData) {
-                    if (error) {
-                        console.log("Login Failed!", error);
-                    } else {
-                        itsOn = 1;
-                        console.log("Authenticated successfully with payload:", authData);
-                        username = authData.facebook.displayName;
-                        removeStuff();
-                        addStuff();
-                    }
-                });
-                ref.onAuth(function(authData) {
-                    if (authData) {
-                        ref.child("users").child(authData.uid).set({
-                            provider: authData.provider,
-                            name: authData.facebook.displayName
-                        });
-                    }
-                });
+            addListeners();
+
+            ref.onAuth(function(authData) {
+                if (authData) {
+                    ref.child("users").child(authData.uid).set({
+                        provider: authData.provider,
+                        name: authData.facebook.displayName
+                    });
+                }
             });
+
             function addLogin() {
-                $('#logindiv').append('<button id="login">Logga in</button>');
+                $('#info').append('<button id="login">Logga in</button>');
+                addListeners();
             }
             function addStuff() {
                 $('#input').append('<input type="text" id="messageInput" placeholder="Message">');
-                $('#input').append('<button id="logout">Logga ut</button>');
+                $('#info').append('You are logged in as: '+ username);
+                $('#info').append('<button id="logout">Logga ut</button>');
                 addListeners();
             }
             function removeStuff() {
                 $('#input').children().remove();
                 $('#chatruta').children().empty();
+                $('#info').children().remove();
             }
             function addListeners() {
+
                 $('#logout').off("click");
                 $('#logout').click(function() {
                     ref.unauth();
@@ -65,14 +64,30 @@ and open the template in the editor.
                     itsOn = 0;
                 });
 
+                $('#messageInput').off("keypress");
                 $('#messageInput').keypress(function(e) {
                     if (e.keyCode == 13) {
                         var text = $('#messageInput').val();
                         ref.child("chat").push('User ' + username + ' says ' + text);
                         $('#messageInput').val('');
-                        $('#chatruta').append('User ' + username + ' says ' + text + '<br>');
+                        $('#chatruta').append('<p>' + username + ': ' + text + '</p>');
                     }
                 });
+                $('#login').off("click");
+                $('#login').click(function() {
+                    ref.authWithOAuthPopup("facebook", function(error, authData) {
+                        if (error) {
+                            console.log("Login Failed!", error);
+                        } else {
+                            itsOn = 1;
+                            console.log("Authenticated successfully with payload:", authData);
+                            username = authData.facebook.displayName;
+                            removeStuff();
+                            addStuff();
+                        }
+                    });
+                });
+
             }
             function authDataCallback(authData) {
                 if (authData) {

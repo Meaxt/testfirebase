@@ -1,0 +1,28 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 2015-maj-08, 13:54:01
+    Author     : matarn534
+*/
+
+#chatruta{
+    height: 850px;
+    width: 1200px;
+}
+#input{
+    float: bottom;
+    background-color: green;
+    width: 300px;
+    
+}
+#messageInput{
+width: 1000px;
+
+}
+#info{
+
+}
+
