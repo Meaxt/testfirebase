@@ -19,9 +19,11 @@ and open the template in the editor.
         <div id="info">
             <button id='login'>Logga in</button> 
         </div>
-        <div id="chatruta"></div>
+        <div id="chatruta">
+
+        </div>
         <div id="input">
-            
+
         </div>
 
 
@@ -45,14 +47,16 @@ and open the template in the editor.
             }
             function addStuff() {
                 $('#input').append('<input type="text" id="messageInput" placeholder="Message">');
-                $('#info').append('You are logged in as: '+ username);
+                $('#info').append('You are logged in as: ' + username);
                 $('#info').append('<button id="logout">Logga ut</button>');
+                $('#chatruta').addClass("chat");
                 addListeners();
             }
             function removeStuff() {
                 $('#input').children().remove();
                 $('#chatruta').children().empty();
                 $('#info').children().remove();
+                $('#chatruta').removeClass("chat");
             }
             function addListeners() {
 
@@ -64,6 +68,14 @@ and open the template in the editor.
                     itsOn = 0;
                 });
 
+//                $('#chatruta').scroll(function() {
+//                    $("#chatruta").animate({scrollTop: $('#chatruta')[0].scrollHeight}, 1000);
+////                            $('#chatruta').append("");
+////                            var d = $('#chatruta');
+////                            d.scrollTop(d.prop("scrollHeight"));
+//
+//                });
+
                 $('#messageInput').off("keypress");
                 $('#messageInput').keypress(function(e) {
                     if (e.keyCode == 13) {
@@ -71,6 +83,8 @@ and open the template in the editor.
                         ref.child("chat").push('User ' + username + ' says ' + text);
                         $('#messageInput').val('');
                         $('#chatruta').append('<p>' + username + ': ' + text + '</p>');
+                        
+                        $("#chatruta").animate({scrollTop: $('#chatruta')[0].scrollHeight}, 1000);
                     }
                 });
                 $('#login').off("click");
@@ -87,6 +101,9 @@ and open the template in the editor.
                         }
                     });
                 });
+
+
+
 
             }
             function authDataCallback(authData) {
