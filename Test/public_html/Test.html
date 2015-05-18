@@ -47,7 +47,7 @@ and open the template in the editor.
             }
             function addStuff() {
                 $('#input').append('<input type="text" id="messageInput" placeholder="Message">');
-                $('#info').append('You are logged in as: ' + username);
+                $('#info').append('<p>You are logged in as: ' + username+ '</p>');
                 $('#info').append('<button id="logout">Logga ut</button>');
                 $('#chatruta').addClass("chat");
                 addListeners();
