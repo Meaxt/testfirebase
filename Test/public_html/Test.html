@@ -30,11 +30,14 @@ and open the template in the editor.
         <script>
             itsOn = 0;
             var ref = new Firebase('https://radiant-heat-57.firebaseio.com/');
+            chatRef = ref.child("chat");
             addListeners();
-            showMessage();
+            
 
             ref.onAuth(function(authData) {
+                
                 if (authData) {
+                   
                     ref.child("users").child(authData.uid).set({
                         provider: authData.provider,
                         name: authData.facebook.displayName
@@ -48,7 +51,7 @@ and open the template in the editor.
             }
             function addStuff() {
                 $('#input').append('<input type="text" id="messageInput" placeholder="Message">');
-                $('#info').append('<p>You are logged in as: ' + username+ '</p>');
+                $('#info').append('<p>You are logged in as: ' + username + '</p>');
                 $('#info').append('<button id="logout">Logga ut</button>');
                 $('#chatruta').addClass("chat");
                 addListeners();
@@ -59,15 +62,17 @@ and open the template in the editor.
                 $('#info').children().remove();
                 $('#chatruta').removeClass("chat");
             }
-            function showMessage(){
-              ref.on('child_added', function (snapshot)){
-                  var data = snapshot.val();
-                  var message = data.text;
-                  nameElement.text(username);
-                  messageElement.text(message).prepend(nameElement);
-                  $('#chatruta').append('<p>'+messageElement+'</p>');
-              }  
+            
+            function showMessage() {
+                chatRef.on("child_added", function(snapshot) {
+                    var newPost = snapshot.val();
+                    $('#chatruta').append('<p>'+newPost+'</p>');
+                    console.log(newPost);
+                });
+
             }
+
+            
             function addListeners() {
 
                 $('#logout').off("click");
@@ -77,36 +82,29 @@ and open the template in the editor.
                     addLogin();
                     itsOn = 0;
                 });
-                
 
-//                $('#chatruta').scroll(function() {
-//                    $("#chatruta").animate({scrollTop: $('#chatruta')[0].scrollHeight}, 1000);
-////                            $('#chatruta').append("");
-////                            var d = $('#chatruta');
-////                            d.scrollTop(d.prop("scrollHeight"));
-//
-//                });
 
                 $('#messageInput').off("keypress");
                 $('#messageInput').keypress(function(e) {
                     if (e.keyCode == 13) {
                         var text = $('#messageInput').val();
-                        ref.child("chat").push('User ' + username + ' says ' + text);
+                        ref.child("chat").push(username + ': ' + text);
                         $('#messageInput').val('');
-                        $('#chatruta').append('<p>' + username + ': ' + text + '</p>');
-                        
-                        
-                        
+//                        $('#chatruta').append('<p>' + username + ': ' + text + '</p>');
+
+
+
                         $("#chatruta").animate({scrollTop: $('#chatruta')[0].scrollHeight}, 1000);
                     }
                 });
-                
+
                 $('#login').off("click");
                 $('#login').click(function() {
                     ref.authWithOAuthPopup("facebook", function(error, authData) {
                         if (error) {
                             console.log("Login Failed!", error);
                         } else {
+                            showMessage();
                             itsOn = 1;
                             console.log("Authenticated successfully with payload:", authData);
                             username = authData.facebook.displayName;
